@@ -1,29 +1,42 @@
 import React, { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
 
+const servingSizes = [
+  {
+    name: "1/4 cup",
+    value: 1 / 4,
+  },
+  {
+    name: "1/3 cup",
+    value: 1 / 3,
+  },
+  {
+    name: "1/2 cup",
+    value: 1 / 2,
+  },
+  {
+    name: "2/3 cup",
+    value: 2 / 3,
+  },
+  {
+    name: "3/4 cup",
+    value: 3 / 4,
+  },
+  {
+    name: "1 cup",
+    value: 1,
+  },
+];
+
 const App = () => {
   // MVP 1
   // input for calories needed per day
   // input for food calories
   // serving size recommendation
   // send results to email
-  return (
-    <div>
-      <Form />
-    </div>
-  );
-};
 
-export default App;
-
-interface HumanFoodFieldProps {
-  name: string;
-  calories: number;
-}
-
-const Form = () => {
-  const [form, setForm] = useState<HumanFoodFieldProps[]>([
-    { name: "", calories: 0 },
-  ]);
+  const [meal, setMeal] = useState(0);
+  const [servingSize, setServingSize] = useState(0); // only work in 1/4 = 0.25, 1/3 = 0.333, 2/4 = 0.5, 2/3 = 0.666, 3/4 = 0.75, 1 = 1
+  const [form, setForm] = useState([{ name: "" }]);
 
   const handleChange = (i: number, e: BaseSyntheticEvent) => {
     const newForm = [...form];
@@ -33,7 +46,7 @@ const Form = () => {
   };
 
   const addFormFields = () => {
-    setForm([...form, { name: "", calories: 0 }]);
+    setForm([...form, { name: "" }]);
   };
 
   const removeFormFields = (i: number) => {
@@ -48,49 +61,62 @@ const Form = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Calories per day</label>
-        <input
-          type="number"
-          className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity:50"
-        />
-        {form.map((element, index) => {
-          return (
-            <div key={index}>
-              <label>Name</label>
-              <input
-                type="text"
-                name="name"
-                value={element.name || ""}
-                onChange={(e) => handleChange(index, e)}
-              />
-              <label>Calories</label>
-              <input
-                type="text"
-                name="calories"
-                value={element.calories || ""}
-                onChange={(e) => handleChange(index, e)}
-              />
-              {index ? (
-                <button
-                  type="button"
-                  className="button remove"
-                  onClick={() => removeFormFields(index)}
-                >
-                  Remove
-                </button>
-              ) : null}
+    <div className="m-5 px-3">
+      <h1 className="text-2xl font-medium text-center">Monters Calculator</h1>
+      <hr />
+      <div className="flex">
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Calories per meal</label>
+            <input type="text" name="mealcalories" value={meal} />
+          </div>
+          <div>
+            <label>Serving size</label>
+            <select name="servingSize">
+              {servingSizes.map((size) => {
+                return <option>{size.name}</option>;
+              })}
+            </select>
+          </div>
+          <hr />
+          <div>
+            {form.map((element, index) => {
+              return (
+                <div key={index}>
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={element.name || ""}
+                    onChange={(e) => handleChange(index, e)}
+                  />
+                  {index ? (
+                    <button
+                      type="button"
+                      className="button remove"
+                      onClick={() => removeFormFields(index)}
+                    >
+                      Remove
+                    </button>
+                  ) : null}
+                </div>
+              );
+            })}
+            <div>
+              <button
+                className="rounded-full"
+                type="button"
+                onClick={() => addFormFields()}
+              >
+                Add
+              </button>
+              <button type="submit">Calculate</button>
             </div>
-          );
-        })}
-        <div>
-          <button type="button" onClick={() => addFormFields()}>
-            Add
-          </button>
-          <button type="submit">Submit</button>
-        </div>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 };
+
+export default App;
