@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
 import { SERVING_SIZES } from "./constants";
 import { getNutritionInformation } from "./request";
