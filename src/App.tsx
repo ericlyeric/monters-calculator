@@ -1,4 +1,6 @@
-import React, { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
+import { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
+import { SERVING_SIZES } from "./constants";
+import { getNutritionInformation } from "./request";
 
 // use https://www.nutritionix.com/
 
@@ -17,52 +19,6 @@ import React, { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
 //   value: 1 / 16,
 //   index: 0,
 // },
-
-const servingSizes = [
-  {
-    name: "1/4 cup",
-    value: 1 / 4,
-  },
-  {
-    name: "1/3 cup",
-    value: 1 / 3,
-  },
-  {
-    name: "1/2 cup",
-    value: 1 / 2,
-  },
-  {
-    name: "2/3 cup",
-    value: 2 / 3,
-  },
-  {
-    name: "3/4 cup",
-    value: 3 / 4,
-  },
-  {
-    name: "1 cup",
-    value: 1,
-  },
-];
-
-const humanFood = [
-  {
-    name: "lean ground beef",
-    calories: 196,
-    protein: 24.2,
-    fat: 10.2,
-    carbohydrate: 0,
-    weight: 85,
-  },
-  {
-    name: "carrots",
-    calories: 16.1,
-    protein: 0.4,
-    fat: 0.1,
-    carbohydrate: 3.8,
-    weight: 46,
-  },
-];
 
 const App = () => {
   // MVP 1
@@ -84,6 +40,11 @@ const App = () => {
     setForm(newForm);
   };
 
+  const handleSizeChange = (e: BaseSyntheticEvent) => {
+    const value = e.target.value;
+    setServingSize(value);
+  };
+
   const addFormFields = () => {
     if (showHumanFood === false) {
       setShowHumanFood(true);
@@ -98,16 +59,13 @@ const App = () => {
     setForm(newForm);
   };
 
-  const handleSizeChange = (e: BaseSyntheticEvent) => {
-    const value = e.target.value;
-    setServingSize(value);
-  };
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    const response = await getNutritionInformation(form[0].name);
     // calculate the next lowest increment of food
     // add support for multiple foods later
     // go one increment lower, fill with real food, lowest they should be able to input is 1 tbsp
-    const currentServingSizeIndex = servingSizes.findIndex((size, index) => {
+    const currentServingSizeIndex = SERVING_SIZES.findIndex((size, index) => {
       if (servingSize === size.name) {
         return index;
       }
@@ -115,26 +73,18 @@ const App = () => {
     let suggestedServingSize = currentServingSizeIndex - 1;
     // calculate the calories of the suggested serving size, find the difference
     const differenceInCalories =
-      meal * servingSizes[suggestedServingSize].value;
+      meal * SERVING_SIZES[suggestedServingSize].value;
     if (differenceInCalories === 0) {
       alert(JSON.stringify("Input error"));
     }
-    const currentHumanFood = humanFood.find(
-      (food) => food.name === form[0].name
-    ); // only 1 entry
-    // calculate the serving size
-    console.log(differenceInCalories);
-    if (currentHumanFood) {
-      const humanFoodInWeight =
-        (differenceInCalories / currentHumanFood.calories) *
-        currentHumanFood.weight;
-      const tablespoonServings = humanFoodInWeight / 15; // 1tbsp = 15g
-      alert(
-        JSON.stringify(
-          `Feed: ${tablespoonServings} tbsps of ${currentHumanFood.name} per meal`
-        )
-      );
-    }
+    const humanFoodInWeight =
+      (differenceInCalories / response.calories) * response.weight;
+    const tablespoonServings = humanFoodInWeight / 15; // 1tbsp = 15g
+    alert(
+      JSON.stringify(
+        `Feed: ${tablespoonServings} tbsps of ${response.name} per meal`
+      )
+    );
   };
 
   return (
@@ -155,8 +105,12 @@ const App = () => {
           <div>
             <label>Current serving size (dry kibble)</label>
             <select name="servingSize" onChange={(e) => handleSizeChange(e)}>
-              {servingSizes.map((size) => {
-                return <option value={size.name}>{size.name}</option>;
+              {SERVING_SIZES.map((size) => {
+                return (
+                  <option key={size.name} value={size.name}>
+                    {size.name}
+                  </option>
+                );
               })}
             </select>
           </div>
@@ -185,7 +139,6 @@ const App = () => {
                   </div>
                 );
               }
-              return;
             })}
             {form.length < 1 || showHumanFood === false ? (
               <div>
