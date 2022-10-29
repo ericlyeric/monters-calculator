@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { BaseSyntheticEvent, SyntheticEvent, useEffect, useState } from "react";
+import { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Accordion } from "./Accordion";
 import { SERVING_SIZES, FORM_DEFAULT_VALUES } from "./constants";
