@@ -26,13 +26,16 @@ import { Form } from "./Form";
 // maybe work in tablespoons as the unit
 const App = () => {
   return (
-    <div className="m-5 px-3">
-      <h1 className="text-2xl font-medium text-center">Monters Calculator</h1>
-      <hr />
-      <div className="flex">
+    <>
+      <div className="flex flex-col">
+        <h1 className="my-3 text-2xl font-medium text-center">
+          Monters' Calculator
+        </h1>
+      </div>
+      <div className="flex flex-col">
         <Form />
       </div>
-    </div>
+    </>
   );
 };
 

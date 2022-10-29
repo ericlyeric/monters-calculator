@@ -1,9 +1,32 @@
 /* eslint-disable array-callback-return */
-import { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
+import { BaseSyntheticEvent, SyntheticEvent, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Accordion } from "./Accordion";
 import { SERVING_SIZES } from "./constants";
 import { getNutritionInformation } from "./request";
 
 export const Form = () => {
+  const { register, watch } = useForm({
+    defaultValues: {
+      caloricIntake: "",
+      calorieReqs: 0,
+      currentServingSize: 0,
+      macros: "false",
+      proteinReqs: 0,
+      fatReqs: 0,
+      carbReqs: 0,
+      foodType: "",
+      desiredServingSize: 0,
+    },
+  });
+
+  const watching = {
+    caloricIntake: watch("caloricIntake"),
+    calorieReqs: watch("calorieReqs"),
+    macros: watch("macros"),
+    foodType: watch("foodType"),
+  };
+
   const [meal, setMeal] = useState(0);
   const [servingSize, setServingSize] = useState(""); // only work in 1/4 = 0.25, 1/3 = 0.333, 2/4 = 0.5, 2/3 = 0.666, 3/4 = 0.75, 1 = 1
   const [form, setForm] = useState([{ name: "" }]);
@@ -65,6 +88,7 @@ export const Form = () => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <Accordion register={register} watching={watching} />
       <div>
         <label>Calories per meal (dry kibble)</label>
         <input
