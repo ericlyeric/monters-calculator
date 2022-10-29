@@ -24,3 +24,16 @@ export const SERVING_SIZES = [
     value: 1,
   },
 ];
+
+export const FORM_DEFAULT_VALUES = {
+  caloricIntake: "",
+  calorieReqs: 0,
+  currentServingSize: 0,
+  macros: "false",
+  proteinReqs: 0,
+  fatReqs: 0,
+  carbReqs: 0,
+  foodType: "",
+  desiredServingSize: 0,
+  desiredServingSizeCalories: 0,
+};

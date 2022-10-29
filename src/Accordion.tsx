@@ -1,17 +1,30 @@
 import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
-import { UseFormRegister } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
-interface AccordionProps {
-  register: UseFormRegister<any>;
-  watching: {
-    caloricIntake: any;
-    calorieReqs: any;
-    macros: any;
+export const Accordion = () => {
+  const methods = useFormContext();
+  const { register, watch, control } = methods;
+  const { fields, append } = useFieldArray({
+    control,
+    name: "humanFood",
+  });
+
+  const watching = {
+    caloricIntake: watch("caloricIntake"),
+    calorieReqs: watch("calorieReqs"),
+    macros: watch("macros"),
+    foodType: watch("foodType"),
+    humanFood: watch("humanFood"),
   };
-}
 
-export const Accordion = ({ register, watching }: AccordionProps) => {
+  const controlledFields = fields.map((field, index) => {
+    return {
+      ...field,
+      ...watching.humanFood[index],
+    };
+  });
+
   return (
     <div className="flex m-auto md:w-2/3 px-auto-4">
       <div className="md:mx-auto w-full rounded-2xl bg-white p-2 mx-3">
@@ -209,11 +222,59 @@ export const Accordion = ({ register, watching }: AccordionProps) => {
                       {...register("desiredServingSize")}
                     />
                   </label>
+                  <label>
+                    <span>
+                      (CALCULATED) Calories in dog's desired serving size
+                    </span>
+                    <input
+                      readOnly
+                      disabled
+                      id="desiredServingSizeCalories"
+                      type="number"
+                      className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      {...register("desiredServingSizeCalories")}
+                    />
+                  </label>
                 </div>
-                <div>
+                {controlledFields.map((field, index) => {
+                  return (
+                    <div>
+                      <label>
+                        <span>Human food {index + 1}</span>
+                        <input
+                          id={`humanFood.${index + 1}.name`}
+                          type="text"
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          {...register(`humanFood.${index}.name`)}
+                        />
+                      </label>
+                      <label>
+                        <span>Amount in Human food {index + 1}</span>
+                        <input
+                          id={`humanFood.${index + 1}.name`}
+                          type="text"
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          {...register(`humanFood.${index}.name`)}
+                        />
+                      </label>
+                      <label>
+                        <span>Calories in Human food {index + 1}</span>
+                        <input
+                          id={`humanFood.${index + 1}.name`}
+                          type="text"
+                          readOnly
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          {...register(`humanFood.${index}.name`)}
+                        />
+                      </label>
+                    </div>
+                  );
+                })}
+                <div className="my-2">
                   <button
                     className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
                     type="button"
+                    onClick={() => append({ name: "" })}
                   >
                     Add Human Food
                   </button>
