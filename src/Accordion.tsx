@@ -1,11 +1,13 @@
 import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
+import { useMemo } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import { convertTextToDecimal } from "./helper";
 
 export const Accordion = () => {
   const methods = useFormContext();
-  const { register, watch, control } = methods;
-  const { fields, append } = useFieldArray({
+  const { register, watch, control, setValue } = methods;
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "humanFood",
   });
@@ -13,6 +15,9 @@ export const Accordion = () => {
   const watching = {
     caloricIntake: watch("caloricIntake"),
     calorieReqs: watch("calorieReqs"),
+    currentServingSize: watch("currentServingSize"),
+    desiredServingSize: watch("desiredServingSize"),
+    desiredServingSizeCalories: watch("desiredServingSizeCalories"),
     macros: watch("macros"),
     foodType: watch("foodType"),
     humanFood: watch("humanFood"),
@@ -24,6 +29,30 @@ export const Accordion = () => {
       ...watching.humanFood[index],
     };
   });
+
+  const calculateDesiredServingSizeCalories = useMemo(() => {
+    if (
+      watching.calorieReqs &&
+      watching.currentServingSize &&
+      watching.desiredServingSize
+    ) {
+      const result =
+        (watching.calorieReqs /
+          convertTextToDecimal(watching.currentServingSize)) *
+        convertTextToDecimal(watching.desiredServingSize);
+      setValue("desiredServingSizeCalories", result);
+      return result;
+    }
+    setValue("desiredServingSizeCalories", 0);
+    return 0;
+  }, [
+    setValue,
+    watching.calorieReqs,
+    watching.currentServingSize,
+    watching.desiredServingSize,
+  ]);
+
+  // create useMemo to calculate total calories in the human foods
 
   return (
     <div className="flex m-auto md:w-2/3 px-auto-4">
@@ -91,12 +120,12 @@ export const Accordion = () => {
                         </span>
                         <input
                           id="currentServingSize"
-                          type="number"
+                          type="text"
                           className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           {...register("currentServingSize")}
                         />
                       </label>
-                      <label>
+                      {/* <label>
                         (OPTIONAL) Do you want to provide macronutrient
                         requirements
                       </label>
@@ -156,7 +185,7 @@ export const Accordion = () => {
                             </label>
                           </div>
                         </div>
-                      ) : null}
+                      ) : null} */}
                     </div>
                   ) : null}
                 </div>
@@ -208,65 +237,76 @@ export const Accordion = () => {
                     </label>
                   </div>
                 </div>
-                <div>
-                  <label>
-                    <span>{`Dog's desired serving size ${
-                      watching.caloricIntake === "per meal"
-                        ? "per meal"
-                        : "per day"
-                    } (in cups)`}</span>
-                    <input
-                      id="desiredServingSize"
-                      type="number"
-                      className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      {...register("desiredServingSize")}
-                    />
-                  </label>
-                  <label>
-                    <span>
-                      (CALCULATED) Calories in dog's desired serving size
-                    </span>
-                    <input
-                      readOnly
-                      disabled
-                      id="desiredServingSizeCalories"
-                      type="number"
-                      className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      {...register("desiredServingSizeCalories")}
-                    />
-                  </label>
-                </div>
+                {watching.foodType !== "none" ? (
+                  <div>
+                    <label>
+                      <span>{`Dog's desired serving size ${
+                        watching.caloricIntake === "per meal"
+                          ? "per meal"
+                          : "per day"
+                      } (in cups)`}</span>
+                      <input
+                        id="desiredServingSize"
+                        type="text"
+                        className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        {...register("desiredServingSize")}
+                      />
+                    </label>
+                    <label>
+                      <span>
+                        {`Calories in dog's ${watching.foodType} food`}
+                      </span>
+                      <input
+                        readOnly
+                        disabled
+                        id="desiredServingSizeCalories"
+                        type="number"
+                        value={calculateDesiredServingSizeCalories}
+                        className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        {...register("desiredServingSizeCalories")}
+                      />
+                    </label>
+                  </div>
+                ) : null}
+
                 {controlledFields.map((field, index) => {
                   return (
-                    <div>
+                    <div key={field}>
                       <label>
                         <span>Human food {index + 1}</span>
                         <input
-                          id={`humanFood.${index + 1}.name`}
+                          id={`humanFood.${index}.name`}
                           type="text"
                           className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           {...register(`humanFood.${index}.name`)}
                         />
                       </label>
                       <label>
-                        <span>Amount in Human food {index + 1}</span>
+                        <span>Amount in Human food {index + 1} (in Tbsp)</span>
                         <input
-                          id={`humanFood.${index + 1}.name`}
-                          type="text"
+                          id={`humanFood.${index}.amount`}
+                          type="number"
                           className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          {...register(`humanFood.${index}.name`)}
+                          {...register(`humanFood.${index}.amount`)}
                         />
                       </label>
                       <label>
                         <span>Calories in Human food {index + 1}</span>
                         <input
-                          id={`humanFood.${index + 1}.name`}
-                          type="text"
+                          id={`humanFood.${index}.calories`}
+                          type="number"
                           readOnly
                           className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          {...register(`humanFood.${index}.name`)}
+                          {...register(`humanFood.${index}.calories`)}
                         />
                       </label>
+                      <button
+                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                        type="button"
+                        onClick={() => remove(index)}
+                      >
+                        Remove food
+                      </button>
                     </div>
                   );
                 })}
@@ -276,14 +316,26 @@ export const Accordion = () => {
                     type="button"
                     onClick={() => append({ name: "" })}
                   >
-                    Add Human Food
+                    Add food
                   </button>
+                  <span>(change this to enable the search bar)</span>
                 </div>
                 <div>
-                  <span>Calories remaining: {watching.calorieReqs}</span>
+                  <span>
+                    Calories remaining:{" "}
+                    {watching.calorieReqs - watching.desiredServingSizeCalories}
+                  </span>
                 </div>
                 <div>
-                  <span>Total calories: </span>
+                  <span>Total calories: TODO</span>
+                </div>
+                <div className="my-2">
+                  <button
+                    className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                    type="submit"
+                  >
+                    Calculate
+                  </button>
                 </div>
               </Disclosure.Panel>
             </>
