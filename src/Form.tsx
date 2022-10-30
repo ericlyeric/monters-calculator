@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable array-callback-return */
 import { BaseSyntheticEvent, SyntheticEvent, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Accordion } from "./Accordion";
 import { SERVING_SIZES, FORM_DEFAULT_VALUES } from "./constants";
+import { convertTextToDecimal } from "./helper";
 import { getNutritionInformation } from "./request";
 
 export const Form = () => {
@@ -10,71 +12,79 @@ export const Form = () => {
     defaultValues: FORM_DEFAULT_VALUES,
   });
 
-  const [meal, setMeal] = useState(0);
-  const [servingSize, setServingSize] = useState(""); // only work in 1/4 = 0.25, 1/3 = 0.333, 2/4 = 0.5, 2/3 = 0.666, 3/4 = 0.75, 1 = 1
-  const [form, setForm] = useState([{ name: "" }]);
-  const [showHumanFood, setShowHumanFood] = useState(false);
+  // const [meal, setMeal] = useState(0);
+  // const [servingSize, setServingSize] = useState(""); // only work in 1/4 = 0.25, 1/3 = 0.333, 2/4 = 0.5, 2/3 = 0.666, 3/4 = 0.75, 1 = 1
+  // const [form, setForm] = useState([{ name: "" }]);
+  // const [showHumanFood, setShowHumanFood] = useState(false);
 
-  const handleChange = (i: number, e: BaseSyntheticEvent) => {
-    const newForm = [...form];
-    // @ts-ignore
-    newForm[i][e.target.name] = e.target.value;
-    setForm(newForm);
-  };
+  // const handleChange = (i: number, e: BaseSyntheticEvent) => {
+  //   const newForm = [...form];
+  //   // @ts-ignore
+  //   newForm[i][e.target.name] = e.target.value;
+  //   setForm(newForm);
+  // };
 
-  const handleSizeChange = (e: BaseSyntheticEvent) => {
-    const value = e.target.value;
-    setServingSize(value);
-  };
+  // const handleSizeChange = (e: BaseSyntheticEvent) => {
+  //   const value = e.target.value;
+  //   setServingSize(value);
+  // };
 
-  const addFormFields = () => {
-    if (showHumanFood === false) {
-      setShowHumanFood(true);
-    } else {
-      setForm([...form, { name: "" }]);
-    }
-  };
+  // const addFormFields = () => {
+  //   if (showHumanFood === false) {
+  //     setShowHumanFood(true);
+  //   } else {
+  //     setForm([...form, { name: "" }]);
+  //   }
+  // };
 
-  const removeFormFields = (i: number) => {
-    let newForm = [...form];
-    newForm.splice(i, 1); // maybe use filter
-    setForm(newForm);
-  };
+  // const removeFormFields = (i: number) => {
+  //   let newForm = [...form];
+  //   newForm.splice(i, 1); // maybe use filter
+  //   setForm(newForm);
+  // };
 
-  const handleSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    const response = await getNutritionInformation(form[0].name);
-    // calculate the next lowest increment of food
-    // add support for multiple foods later
-    // go one increment lower, fill with real food, lowest they should be able to input is 1 tbsp
-    const currentServingSizeIndex = SERVING_SIZES.findIndex((size, index) => {
-      if (servingSize === size.name) {
-        return index;
-      }
-    }); // since only 1 item
-    let suggestedServingSize = currentServingSizeIndex - 1;
-    // calculate the calories of the suggested serving size, find the difference
-    const differenceInCalories =
-      meal * SERVING_SIZES[suggestedServingSize].value;
-    if (differenceInCalories === 0) {
-      alert(JSON.stringify("Input error"));
-    }
-    const humanFoodInWeight =
-      (differenceInCalories / response.calories) * response.weight;
-    const tablespoonServings = humanFoodInWeight / 15; // 1tbsp = 15g
-    alert(
-      JSON.stringify(
-        `Feed: ${tablespoonServings} tbsps of ${response.name} per meal`
-      )
-    );
+  const onSubmit = async (data: any) => {
+    console.log(data);
+    const currentServingSize = convertTextToDecimal(data.currentServingSize);
+    console.log(currentServingSize);
+
+    const desiredServingSize = convertTextToDecimal(data.desiredServingSize);
+    console.log(desiredServingSize);
+
+    // calculate the desired calories
+    // get the ratio of the current calories/currents serving size = desired calories/ desired serving size
+    // CC / CSS * DSS = DC
+    // const response = await getNutritionInformation(data.[0].name);
+    // // calculate the next lowest increment of food
+    // // add support for multiple foods later
+    // // go one increment lower, fill with real food, lowest they should be able to input is 1 tbsp
+    // const currentServingSizeIndex = SERVING_SIZES.findIndex((size, index) => {
+    //   if (servingSize === size.name) {
+    //     return index;
+    //   }
+    // }); // since only 1 item
+    // let suggestedServingSize = currentServingSizeIndex - 1;
+    // // calculate the calories of the suggested serving size, find the difference
+    // const differenceInCalories =
+    //   meal * SERVING_SIZES[suggestedServingSize].value;
+    // if (differenceInCalories === 0) {
+    //   alert(JSON.stringify("Input error"));
+    // }
+    // const humanFoodInWeight =
+    //   (differenceInCalories / response.calories) * response.weight;
+    // const tablespoonServings = humanFoodInWeight / 15; // 1tbsp = 15g
+    // alert(
+    //   JSON.stringify(
+    //     `Feed: ${tablespoonServings} tbsps of ${response.name} per meal`
+    //   )
+    // );
   };
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit}>
-        {/* <Accordion register={register} watching={watching} /> */}
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Accordion />
-        <div>
+        {/* <div>
           <label>Calories per meal (dry kibble)</label>
           <input
             type="number"
@@ -134,10 +144,9 @@ export const Form = () => {
           ) : null}
           <p>will add support for multiple foods later</p>
         </div>
-        {/* disable button until calories per meal is filled in */}
         <button type="submit" disabled={meal <= 0}>
           Calculate
-        </button>
+        </button> */}
       </form>
     </FormProvider>
   );

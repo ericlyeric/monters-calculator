@@ -18,12 +18,6 @@ import { Form } from "./Form";
 //   index: 0,
 // },
 
-// MVP 1
-// input for calories needed per day
-// input for food calories
-// serving size recommendation
-// send results to email
-// maybe work in tablespoons as the unit
 const App = () => {
   return (
     <>
