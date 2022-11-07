@@ -2,6 +2,7 @@ import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useMemo } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import { FoodLookup } from "./FoodLookup";
 import { convertTextToDecimal } from "./helper";
 
 export const Accordion = () => {
@@ -272,6 +273,7 @@ export const Accordion = () => {
                 {controlledFields.map((field, index) => {
                   return (
                     <div key={field}>
+                      <FoodLookup />
                       <label>
                         <span>Human food {index + 1}</span>
                         <input

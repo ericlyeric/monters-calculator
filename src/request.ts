@@ -1,5 +1,18 @@
 import axios, { AxiosResponse } from "axios";
 
+export const searchFood = async (food: string) => {
+  const response = await axios.get(
+    `https://trackapi.nutritionix.com/v2/search/instant?query=${food}`,
+    {
+      headers: {
+        "x-app-id": process.env.REACT_APP_X_APP_ID,
+        "x-app-key": process.env.REACT_APP_X_APP_KEY,
+      },
+    }
+  );
+  return response.data.common;
+};
+
 export const getNutritionInformation = async (foodItem: string) => {
   const response = await axios.post(
     `https://trackapi.nutritionix.com/v2/natural/nutrients?x-app-id=${process.env.REACT_APP_X_APP_ID}&x-app-key=${process.env.REACT_APP_X_APP_KEY}`,
