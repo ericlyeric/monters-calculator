@@ -36,4 +36,5 @@ export const FORM_DEFAULT_VALUES = {
   foodType: "dry",
   desiredServingSize: 0,
   desiredServingSizeCalories: 0,
+  isHumanFood: "true",
 };

@@ -52,33 +52,38 @@ export const FoodLookup = () => {
               })}
             />
             {isOpen ? (
-              <div>
-                {
-                  // filter the movies in the state
-                  state
-                    .filter(
-                      (item: any) =>
-                        !inputValue ||
-                        item.food_name
-                          .toLowerCase()
-                          .includes(inputValue.toLowerCase())
-                    )
-                    .slice(0, 10) // return just the first ten. Helps improve performance
-                    // map the filtered movies and display their title
-                    .map((item: any, index) => (
-                      <div
-                        className="dropdown-item"
-                        {...getItemProps({ key: index, index, item })}
-                        style={{
-                          backgroundColor:
-                            highlightedIndex === index ? "lightgray" : "white",
-                          fontWeight: selectedItem === item ? "bold" : "normal",
-                        }}
-                      >
-                        {item.food_name}
-                      </div>
-                    ))
-                }
+              <div className="relative">
+                <ul className="absolute z-99 top-full left-0 right-0">
+                  {
+                    // filter the movies in the state
+                    state
+                      .filter(
+                        (item: any) =>
+                          !inputValue ||
+                          item.food_name
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                      )
+                      .slice(0, 10) // return just the first ten. Helps improve performance
+                      // map the filtered movies and display their title
+                      .map((item: any, index) => (
+                        <li
+                          className=""
+                          {...getItemProps({ key: index, index, item })}
+                          style={{
+                            backgroundColor:
+                              highlightedIndex === index
+                                ? "lightgray"
+                                : "white",
+                            fontWeight:
+                              selectedItem === item ? "bold" : "normal",
+                          }}
+                        >
+                          {item.food_name}
+                        </li>
+                      ))
+                  }
+                </ul>
               </div>
             ) : null}
           </div>

@@ -21,6 +21,7 @@ export const Accordion = () => {
     desiredServingSizeCalories: watch("desiredServingSizeCalories"),
     macros: watch("macros"),
     foodType: watch("foodType"),
+    isHumanFood: watch("isHumanFood"),
     humanFood: watch("humanFood"),
   };
 
@@ -269,11 +270,46 @@ export const Accordion = () => {
                     </label>
                   </div>
                 ) : null}
-
+                <div className="mb-2">
+                  <label>Add human food</label>
+                  <div className="flex my-1">
+                    <label className="mx-2" htmlFor="yes">
+                      <input
+                        type="radio"
+                        value="true"
+                        id="yes"
+                        {...register("isHumanFood")}
+                      />
+                      <span className="mx-1">Yes</span>
+                    </label>
+                    <label className="mx-3" htmlFor="no">
+                      <input
+                        type="radio"
+                        value="false"
+                        id="no"
+                        {...register("isHumanFood")}
+                      />
+                      <span className="mx-1">No</span>
+                    </label>
+                  </div>
+                </div>
+                {watching.isHumanFood === "true" ? (
+                  <div>
+                    <FoodLookup />
+                    <div className="my-2">
+                      <button
+                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                        type="button"
+                        onClick={() => append({ name: "" })}
+                      >
+                        Add food
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
                 {controlledFields.map((field, index) => {
                   return (
                     <div key={field}>
-                      <FoodLookup />
                       <label>
                         <span>Human food {index + 1}</span>
                         <input
@@ -312,16 +348,6 @@ export const Accordion = () => {
                     </div>
                   );
                 })}
-                <div className="my-2">
-                  <button
-                    className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-                    type="button"
-                    onClick={() => append({ name: "" })}
-                  >
-                    Add food
-                  </button>
-                  <span>(change this to enable the search bar)</span>
-                </div>
                 <div>
                   <span>
                     Calories remaining:{" "}
