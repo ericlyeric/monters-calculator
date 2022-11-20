@@ -44,7 +44,6 @@ export const Form = () => {
   // };
 
   const onSubmit = async (data: any) => {
-    console.log(data);
     const currentServingSize = convertTextToDecimal(data.currentServingSize);
     console.log(currentServingSize);
 

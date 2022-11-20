@@ -57,9 +57,10 @@ export const Accordion = () => {
   ]);
 
   const handleSelectFood = async (e: any) => {
-    console.log(e);
-    const response = await getNutritionInformation(e.food_name);
-    append(response);
+    if (e?.food_name) {
+      const response = await getNutritionInformation(e.food_name);
+      append(response);
+    }
   };
   // create useMemo to calculate total calories in the human foods
 
@@ -349,7 +350,6 @@ export const Accordion = () => {
                   </div>
                 </div>
                 {controlledFields.map((field, index) => {
-                  console.log(field);
                   return (
                     <div className="my-1 border-t-2" key={field}>
                       <div className="flex items-center justify-between">

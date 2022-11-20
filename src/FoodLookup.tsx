@@ -1,14 +1,15 @@
+import { XMarkIcon } from "@heroicons/react/20/solid";
 import Downshift from "downshift";
 import { useState } from "react";
 import { searchFood } from "./request";
 
 export const FoodLookup = ({ onSelect }: any) => {
-  const [state, setState] = useState([]);
+  const [lookupState, setLookupState] = useState([]);
 
   const fetchFoods = async (food: string) => {
     try {
       const response = await searchFood(food);
-      setState(response);
+      setLookupState(response);
     } catch (e) {
       console.log(e);
     }
@@ -22,13 +23,11 @@ export const FoodLookup = ({ onSelect }: any) => {
     fetchFoods(e.target.value);
   };
 
-  // const handleOnChange = (selected: any) => {
-  //   alert(`selected ${selected.food_name}`);
-  // };
-
   return (
     <Downshift
-      onChange={(e) => onSelect(e)}
+      onChange={(e) => {
+        onSelect(e);
+      }}
       itemToString={(item) => (item ? item.food_name : "")}
     >
       {({
@@ -39,6 +38,7 @@ export const FoodLookup = ({ onSelect }: any) => {
         isOpen,
         inputValue,
         getLabelProps,
+        clearSelection,
       }) => {
         return (
           <div>
@@ -46,7 +46,7 @@ export const FoodLookup = ({ onSelect }: any) => {
               <div className="flex">
                 <label {...getLabelProps()}>Search</label>
               </div>
-              <div className="relative">
+              <div className="mt-1 relative">
                 <input
                   type="text"
                   className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
@@ -55,36 +55,41 @@ export const FoodLookup = ({ onSelect }: any) => {
                     onChange: inputOnChange,
                   })}
                 />
+                {inputValue ? (
+                  <span
+                    className="absolute right-2 top-2.5"
+                    onClick={() => clearSelection()}
+                  >
+                    <XMarkIcon className="h-5 w-5" />
+                  </span>
+                ) : null}
+
                 {isOpen ? (
-                  <div className="absolute">
-                    <ul className="z-99 rounded-md w-full top-100 shadow-lg ring-1 ring-black ring-opacity-5">
-                      {state
-                        .filter(
-                          (item: any) =>
-                            !inputValue ||
-                            item.food_name
-                              .toLowerCase()
-                              .includes(inputValue.toLowerCase())
-                        )
-                        .slice(0, 10)
-                        .map((item: any, index) => (
-                          <li
-                            className="px-3 py-1 text-xs w-full"
-                            {...getItemProps({ key: index, index, item })}
-                            style={{
-                              backgroundColor:
-                                highlightedIndex === index
-                                  ? "lightgray"
-                                  : "white",
-                              fontWeight:
-                                selectedItem === item ? "bold" : "normal",
-                            }}
-                          >
-                            {item.food_name}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
+                  <ul className="absolute z-99 top-100 left-0 right-0 border rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                    {lookupState
+                      .filter(
+                        (item: any) =>
+                          !inputValue ||
+                          item.food_name
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                      )
+                      .slice(0, 10)
+                      .map((item: any, index) => (
+                        <li
+                          className={`px-3 py-1 text-xs w-full first:rounded-t-lg last:rounded-b-lg bg-white ${
+                            highlightedIndex === index
+                              ? "hover:bg-amber-300"
+                              : null
+                          } ${
+                            selectedItem === item ? "font-bold" : "font-normal"
+                          }`}
+                          {...getItemProps({ key: index, index, item })}
+                        >
+                          {item.food_name}
+                        </li>
+                      ))}
+                  </ul>
                 ) : null}
               </div>
             </div>
