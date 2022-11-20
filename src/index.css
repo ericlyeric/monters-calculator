@@ -6,6 +6,12 @@ input[type="radio"]:checked, :after {
   background-color: #fbbf24;
 }
 
+input[type="radio"] {
+  -ms-transform: scale(0.70); /* IE 9 */
+  -webkit-transform: scale(0.70); /* Chrome, Safari, Opera */
+  transform: scale(0.70);
+}
+
 /* Remove Arrow/Spinners */
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,

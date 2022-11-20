@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { FoodLookup } from "./FoodLookup";
 import { convertTextToDecimal } from "./helper";
+import { getNutritionInformation } from "./request";
 
 export const Accordion = () => {
   const methods = useFormContext();
@@ -54,6 +55,11 @@ export const Accordion = () => {
     watching.desiredServingSize,
   ]);
 
+  const handleSelectFood = async (e: any) => {
+    console.log(e);
+    const response = await getNutritionInformation(e.food_name);
+    append(response);
+  };
   // create useMemo to calculate total calories in the human foods
 
   return (
@@ -71,9 +77,11 @@ export const Accordion = () => {
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="px-4 py-2 text-sm text-gray-500">
-                <div className="mb-2">
-                  <label>Caloric intake</label>
-                  <div className="my-1">
+                <div className="flex justify-between mb-2">
+                  <div className="flex grow">
+                    <label className="mr-2">Intake</label>
+                  </div>
+                  <div className="flex">
                     <label className="mx-2" htmlFor="perDay">
                       <input
                         className="text-amber-500 focus:ring-amber-500"
@@ -82,7 +90,7 @@ export const Accordion = () => {
                         id="perDay"
                         {...register("caloricIntake")}
                       />
-                      <span className="mx-1">Per day</span>
+                      <span className="text-xs">Per day</span>
                     </label>
                     <label className="mx-3" htmlFor="perMeal">
                       <input
@@ -92,49 +100,61 @@ export const Accordion = () => {
                         id="perMeal"
                         {...register("caloricIntake")}
                       />
-                      <span className="mx-1">Per meal</span>
+                      <span className="text-xs">Per meal</span>
                     </label>
                   </div>
                 </div>
                 <div className="mt-2">
                   {watching.caloricIntake ? (
                     <div>
-                      <label htmlFor="calorieReqs">
-                        <span>
-                          Calories{" "}
-                          {watching.caloricIntake === "per meal"
-                            ? "per meal"
-                            : "per day"}
-                        </span>
-                        <div className="relative">
+                      <div className="flex items-center justify-between">
+                        <div className="flex">
+                          <label htmlFor="calorieReqs">
+                            <span className="text-center">
+                              Calories{" "}
+                              {watching.caloricIntake === "per meal"
+                                ? "per meal"
+                                : "per day"}
+                            </span>
+                          </label>
+                        </div>
+                        <div className="w-24 relative">
                           <input
                             id="calorieReqs"
                             type="number"
-                            className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                            className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                             {...register("calorieReqs")}
                           />
-                          <span className="absolute top-3 right-2">cal</span>
+                          <span className="absolute text-xs top-3.5 right-2">
+                            cal
+                          </span>
                         </div>
-                      </label>
-                      <label htmlFor="currentServingSize">
-                        <span>
-                          {`Serving size
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex">
+                          <label htmlFor="currentServingSize">
+                            <span>
+                              {`Serving size
                           ${
                             watching.caloricIntake === "per meal"
                               ? "per meal"
                               : "per day"
                           }`}
-                        </span>
-                        <div className="relative">
+                            </span>
+                          </label>
+                        </div>
+                        <div className="w-24 relative">
                           <input
                             id="currentServingSize"
                             type="text"
-                            className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                            className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                             {...register("currentServingSize")}
                           />
-                          <span className="absolute top-3 right-2">cup(s)</span>
+                          <span className="absolute text-xs top-3.5 right-2">
+                            cup(s)
+                          </span>
                         </div>
-                      </label>
+                      </div>
                       {/* <label>
                         (OPTIONAL) Do you want to provide macronutrient
                         requirements
@@ -214,10 +234,12 @@ export const Accordion = () => {
                   } h-5 w-5 text-brown-500`}
                 />
               </Disclosure.Button>
-              <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-500">
-                <div className="mb-2">
-                  <label>Food type</label>
-                  <div className="flex my-1">
+              <Disclosure.Panel className="px-4 pt-3 pb-2 text-sm text-gray-500">
+                <div className="flex mb-2 items-center justify-between">
+                  <div>
+                    <label>Food type</label>
+                  </div>
+                  <div className="flex">
                     <label className="mx-2" htmlFor="dry">
                       <input
                         className="text-amber-500 focus:ring-amber-500"
@@ -226,7 +248,7 @@ export const Accordion = () => {
                         id="dry"
                         {...register("foodType")}
                       />
-                      <span className="mx-1">Dry</span>
+                      <span className="text-xs">Dry</span>
                     </label>
                     <label className="mx-3" htmlFor="wet">
                       <input
@@ -236,7 +258,7 @@ export const Accordion = () => {
                         id="wet"
                         {...register("foodType")}
                       />
-                      <span className="mx-1">Wet</span>
+                      <span className="text-xs">Wet</span>
                     </label>
                     <label className="mx-3" htmlFor="none">
                       <input
@@ -246,47 +268,62 @@ export const Accordion = () => {
                         id="none"
                         {...register("foodType")}
                       />
-                      <span className="mx-1">None</span>
+                      <span className="text-xs">None</span>
                     </label>
                   </div>
                 </div>
                 {watching.foodType !== "none" ? (
                   <div>
-                    <label>
-                      <span>{`Calories in ${watching.foodType} food`}</span>
-                      <div className="relative">
+                    <div className="flex items-center justify-between">
+                      <div className="flex">
+                        <label htmlFor="desiredServingSize">
+                          <span>{`Serving size ${
+                            watching.caloricIntake === "per meal"
+                              ? "per meal"
+                              : "per day"
+                          }`}</span>
+                        </label>
+                      </div>
+                      <div className="w-24 relative">
+                        <input
+                          id="desiredServingSize"
+                          type="text"
+                          className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                          {...register("desiredServingSize")}
+                        />
+                        <span className="absolute text-xs top-3.5 right-2">
+                          cup(s)
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex">
+                        <label htmlFor="desiredServingSizeCalories">
+                          <span>{`Calories in ${watching.foodType} food`}</span>
+                        </label>
+                      </div>
+                      <div className="w-24 relative">
                         <input
                           readOnly
                           disabled
                           id="desiredServingSizeCalories"
                           type="number"
                           value={calculateDesiredServingSizeCalories}
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                          className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                           {...register("desiredServingSizeCalories")}
                         />
-                        <span className="absolute top-3 right-2">cal</span>
+                        <span className="absolute text-xs top-3.5 right-2">
+                          cal
+                        </span>
                       </div>
-                    </label>
-                    <label>
-                      <span>{`Serving size ${
-                        watching.caloricIntake === "per meal"
-                          ? "per meal"
-                          : "per day"
-                      }`}</span>
-                      <div className="relative">
-                        <input
-                          id="desiredServingSize"
-                          type="text"
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                          {...register("desiredServingSize")}
-                        />
-                        <span className="absolute top-3 right-2">cup(s)</span>
-                      </div>
-                    </label>
+                    </div>
                   </div>
                 ) : null}
-                <div className="mb-2">
-                  <label>Add human food</label>
+
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex">
+                    <label>Human food</label>
+                  </div>
                   <div className="flex my-1">
                     <label className="mx-2" htmlFor="yes">
                       <input
@@ -296,7 +333,7 @@ export const Accordion = () => {
                         id="yes"
                         {...register("isHumanFood")}
                       />
-                      <span className="mx-1">Yes</span>
+                      <span className="text-xs">Yes</span>
                     </label>
                     <label className="mx-3" htmlFor="no">
                       <input
@@ -306,13 +343,13 @@ export const Accordion = () => {
                         id="no"
                         {...register("isHumanFood")}
                       />
-                      <span className="mx-1">No</span>
+                      <span className="text-xs">No</span>
                     </label>
                   </div>
                 </div>
                 {watching.isHumanFood === "true" ? (
                   <div>
-                    <FoodLookup onSelect={(e: any) => append({ name: e })} />
+                    <FoodLookup onSelect={(e: any) => handleSelectFood(e)} />
                     {/* <div className="my-2">
                       <button
                         className="focus:outline-none text-white bg-brown-700 hover:bg-brown-800 focus:ring-4 focus:ring-brown-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-brown-600 dark:hover:bg-brown-700 dark:focus:ring-brown-900"
@@ -325,6 +362,7 @@ export const Accordion = () => {
                   </div>
                 ) : null}
                 {controlledFields.map((field, index) => {
+                  console.log(field);
                   return (
                     <div key={field}>
                       <label>
@@ -365,14 +403,16 @@ export const Accordion = () => {
                     </div>
                   );
                 })}
-                <div>
-                  <span>
-                    Calories remaining:{" "}
-                    {watching.calorieReqs - watching.desiredServingSizeCalories}
+                <div className="flex my-2 justify-between">
+                  <span>Calories remaining: </span>
+                  <span className="text-xs">
+                    {watching.calorieReqs - watching.desiredServingSizeCalories}{" "}
+                    cal
                   </span>
                 </div>
-                <div>
-                  <span>Total calories: TODO</span>
+                <div className="flex my-2 justify-between">
+                  <span>Total calories: </span>
+                  <span className="text-xs">TODO cal</span>
                 </div>
                 <div className="my-2">
                   <button
