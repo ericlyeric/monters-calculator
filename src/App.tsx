@@ -1,4 +1,5 @@
 import { Form } from "./Form";
+import cavachon from "./assets/cavachon01.png";
 
 // use https://www.nutritionix.com/
 
@@ -20,16 +21,25 @@ import { Form } from "./Form";
 
 const App = () => {
   return (
-    <>
+    <div
+      className="h-screen bg-repeat"
+      style={{
+        backgroundImage: `url(${cavachon}`,
+        backgroundSize: "100px",
+        opacity: "90%",
+      }}
+    >
       <div className="flex flex-col">
         <h1 className="my-3 text-2xl font-medium text-center">
-          Monters' Calculator
+          <span className="bg-white rounded-md p-2 opacity-95">
+            Monters' Calculator
+          </span>
         </h1>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col py-3 opacity-95">
         <Form />
       </div>
-    </>
+    </div>
   );
 };
 

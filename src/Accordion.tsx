@@ -62,12 +62,12 @@ export const Accordion = () => {
         <Disclosure as="div" defaultOpen>
           {({ open }) => (
             <>
-              <Disclosure.Button className="flex w-full justify-between rounded-lg bg-purple-100 px-4 py-2 text-left text-sm font-medium text-purple-900 hover:bg-purple-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+              <Disclosure.Button className="flex w-full justify-between rounded-lg bg-brown-100 px-4 py-2 text-left text-sm font-medium text-brown-900 hover:bg-brown-200 focus:outline-none focus-visible:ring focus-visible:ring-brown-500 focus-visible:ring-opacity-75">
                 <span>Caloric Requirements</span>
                 <ChevronUpIcon
                   className={`${
                     open ? "rotate-180 transform" : ""
-                  } h-5 w-5 text-purple-500`}
+                  } h-5 w-5 text-brown-500`}
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="px-4 py-2 text-sm text-gray-500">
@@ -76,6 +76,7 @@ export const Accordion = () => {
                   <div className="my-1">
                     <label className="mx-2" htmlFor="perDay">
                       <input
+                        className="text-amber-500 focus:ring-amber-500"
                         type="radio"
                         value="per day"
                         id="perDay"
@@ -85,6 +86,7 @@ export const Accordion = () => {
                     </label>
                     <label className="mx-3" htmlFor="perMeal">
                       <input
+                        className="text-amber-500 focus:ring-amber-500"
                         type="radio"
                         value="per meal"
                         id="perMeal"
@@ -99,33 +101,39 @@ export const Accordion = () => {
                     <div>
                       <label htmlFor="calorieReqs">
                         <span>
-                          Dog's current caloric intake{" "}
+                          Calories{" "}
                           {watching.caloricIntake === "per meal"
                             ? "per meal"
                             : "per day"}
                         </span>
-                        <input
-                          id="calorieReqs"
-                          type="number"
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          {...register("calorieReqs")}
-                        />
+                        <div className="relative">
+                          <input
+                            id="calorieReqs"
+                            type="number"
+                            className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                            {...register("calorieReqs")}
+                          />
+                          <span className="absolute top-3 right-2">cal</span>
+                        </div>
                       </label>
                       <label htmlFor="currentServingSize">
                         <span>
-                          {`Dog's current serving size
+                          {`Serving size
                           ${
                             watching.caloricIntake === "per meal"
                               ? "per meal"
                               : "per day"
-                          } (in cups)`}
+                          }`}
                         </span>
-                        <input
-                          id="currentServingSize"
-                          type="text"
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          {...register("currentServingSize")}
-                        />
+                        <div className="relative">
+                          <input
+                            id="currentServingSize"
+                            type="text"
+                            className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                            {...register("currentServingSize")}
+                          />
+                          <span className="absolute top-3 right-2">cup(s)</span>
+                        </div>
                       </label>
                       {/* <label>
                         (OPTIONAL) Do you want to provide macronutrient
@@ -159,7 +167,7 @@ export const Accordion = () => {
                               <input
                                 id="proteinReqs"
                                 type="number"
-                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                                 {...register("proteinReqs")}
                               />
                             </label>
@@ -170,7 +178,7 @@ export const Accordion = () => {
                               <input
                                 id="fatReqs"
                                 type="number"
-                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                                 {...register("fatReqs")}
                               />
                             </label>
@@ -181,7 +189,7 @@ export const Accordion = () => {
                               <input
                                 id="carbReqs"
                                 type="number"
-                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                                 {...register("carbReqs")}
                               />
                             </label>
@@ -198,20 +206,21 @@ export const Accordion = () => {
         <Disclosure defaultOpen as="div" className="mt-2">
           {({ open }) => (
             <>
-              <Disclosure.Button className="flex w-full justify-between rounded-lg bg-purple-100 px-4 py-2 text-left text-sm font-medium text-purple-900 hover:bg-purple-200 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+              <Disclosure.Button className="flex w-full justify-between rounded-lg bg-brown-100 px-4 py-2 text-left text-sm font-medium text-brown-900 hover:bg-brown-200 focus:outline-none focus-visible:ring focus-visible:ring-brown-500 focus-visible:ring-opacity-75">
                 <span>Meal Plan</span>
                 <ChevronUpIcon
                   className={`${
                     open ? "rotate-180 transform" : ""
-                  } h-5 w-5 text-purple-500`}
+                  } h-5 w-5 text-brown-500`}
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-500">
                 <div className="mb-2">
-                  <label>Dog Food Type</label>
+                  <label>Food type</label>
                   <div className="flex my-1">
                     <label className="mx-2" htmlFor="dry">
                       <input
+                        className="text-amber-500 focus:ring-amber-500"
                         type="radio"
                         value="dry"
                         id="dry"
@@ -221,6 +230,7 @@ export const Accordion = () => {
                     </label>
                     <label className="mx-3" htmlFor="wet">
                       <input
+                        className="text-amber-500 focus:ring-amber-500"
                         type="radio"
                         value="wet"
                         id="wet"
@@ -230,6 +240,7 @@ export const Accordion = () => {
                     </label>
                     <label className="mx-3" htmlFor="none">
                       <input
+                        className="text-amber-500 focus:ring-amber-500"
                         type="radio"
                         value="none"
                         id="none"
@@ -242,31 +253,35 @@ export const Accordion = () => {
                 {watching.foodType !== "none" ? (
                   <div>
                     <label>
-                      <span>{`Dog's desired serving size ${
+                      <span>{`Calories in ${watching.foodType} food`}</span>
+                      <div className="relative">
+                        <input
+                          readOnly
+                          disabled
+                          id="desiredServingSizeCalories"
+                          type="number"
+                          value={calculateDesiredServingSizeCalories}
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                          {...register("desiredServingSizeCalories")}
+                        />
+                        <span className="absolute top-3 right-2">cal</span>
+                      </div>
+                    </label>
+                    <label>
+                      <span>{`Serving size ${
                         watching.caloricIntake === "per meal"
                           ? "per meal"
                           : "per day"
-                      } (in cups)`}</span>
-                      <input
-                        id="desiredServingSize"
-                        type="text"
-                        className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        {...register("desiredServingSize")}
-                      />
-                    </label>
-                    <label>
-                      <span>
-                        {`Calories in dog's ${watching.foodType} food`}
-                      </span>
-                      <input
-                        readOnly
-                        disabled
-                        id="desiredServingSizeCalories"
-                        type="number"
-                        value={calculateDesiredServingSizeCalories}
-                        className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        {...register("desiredServingSizeCalories")}
-                      />
+                      }`}</span>
+                      <div className="relative">
+                        <input
+                          id="desiredServingSize"
+                          type="text"
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                          {...register("desiredServingSize")}
+                        />
+                        <span className="absolute top-3 right-2">cup(s)</span>
+                      </div>
                     </label>
                   </div>
                 ) : null}
@@ -275,6 +290,7 @@ export const Accordion = () => {
                   <div className="flex my-1">
                     <label className="mx-2" htmlFor="yes">
                       <input
+                        className="text-amber-500 focus:ring-amber-500"
                         type="radio"
                         value="true"
                         id="yes"
@@ -284,6 +300,7 @@ export const Accordion = () => {
                     </label>
                     <label className="mx-3" htmlFor="no">
                       <input
+                        className="text-amber-500 focus:ring-amber-500"
                         type="radio"
                         value="false"
                         id="no"
@@ -295,16 +312,16 @@ export const Accordion = () => {
                 </div>
                 {watching.isHumanFood === "true" ? (
                   <div>
-                    <FoodLookup />
-                    <div className="my-2">
+                    <FoodLookup onSelect={(e: any) => append({ name: e })} />
+                    {/* <div className="my-2">
                       <button
-                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                        className="focus:outline-none text-white bg-brown-700 hover:bg-brown-800 focus:ring-4 focus:ring-brown-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-brown-600 dark:hover:bg-brown-700 dark:focus:ring-brown-900"
                         type="button"
                         onClick={() => append({ name: "" })}
                       >
                         Add food
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 ) : null}
                 {controlledFields.map((field, index) => {
@@ -315,7 +332,7 @@ export const Accordion = () => {
                         <input
                           id={`humanFood.${index}.name`}
                           type="text"
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                           {...register(`humanFood.${index}.name`)}
                         />
                       </label>
@@ -324,7 +341,7 @@ export const Accordion = () => {
                         <input
                           id={`humanFood.${index}.amount`}
                           type="number"
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                           {...register(`humanFood.${index}.amount`)}
                         />
                       </label>
@@ -334,12 +351,12 @@ export const Accordion = () => {
                           id={`humanFood.${index}.calories`}
                           type="number"
                           readOnly
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                           {...register(`humanFood.${index}.calories`)}
                         />
                       </label>
                       <button
-                        className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                        className="focus:outline-none text-white bg-brown-700 hover:bg-brown-800 focus:ring-4 focus:ring-brown-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-brown-600 dark:hover:bg-brown-700 dark:focus:ring-brown-900"
                         type="button"
                         onClick={() => remove(index)}
                       >
@@ -359,7 +376,7 @@ export const Accordion = () => {
                 </div>
                 <div className="my-2">
                   <button
-                    className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                    className="focus:outline-none text-white bg-brown-700 hover:bg-brown-800 focus:ring-4 focus:ring-brown-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-brown-600 dark:hover:bg-brown-700 dark:focus:ring-brown-900"
                     type="submit"
                   >
                     Calculate

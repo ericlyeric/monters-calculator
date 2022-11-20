@@ -2,7 +2,7 @@ import Downshift from "downshift";
 import { useState } from "react";
 import { searchFood } from "./request";
 
-export const FoodLookup = () => {
+export const FoodLookup = ({ onSelect }: any) => {
   const [state, setState] = useState([]);
 
   const fetchFoods = async (food: string) => {
@@ -21,13 +21,13 @@ export const FoodLookup = () => {
     fetchFoods(e.target.value);
   };
 
-  const handleOnChange = (selected: any) => {
-    alert(`selected ${selected.food_name}`);
-  };
+  // const handleOnChange = (selected: any) => {
+  //   alert(`selected ${selected.food_name}`);
+  // };
 
   return (
     <Downshift
-      onChange={(e) => handleOnChange(e)}
+      onChange={(e) => onSelect(e)}
       itemToString={(item) => (item ? item.food_name : "")}
     >
       {({
@@ -47,42 +47,35 @@ export const FoodLookup = () => {
               type="text"
               className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               {...getInputProps({
-                placeholder: "search food",
+                placeholder: "type the name of the food here",
                 onChange: inputOnChange,
               })}
             />
             {isOpen ? (
               <div className="relative">
-                <ul className="absolute z-99 top-full left-0 right-0">
-                  {
-                    // filter the movies in the state
-                    state
-                      .filter(
-                        (item: any) =>
-                          !inputValue ||
-                          item.food_name
-                            .toLowerCase()
-                            .includes(inputValue.toLowerCase())
-                      )
-                      .slice(0, 10) // return just the first ten. Helps improve performance
-                      // map the filtered movies and display their title
-                      .map((item: any, index) => (
-                        <li
-                          className=""
-                          {...getItemProps({ key: index, index, item })}
-                          style={{
-                            backgroundColor:
-                              highlightedIndex === index
-                                ? "lightgray"
-                                : "white",
-                            fontWeight:
-                              selectedItem === item ? "bold" : "normal",
-                          }}
-                        >
-                          {item.food_name}
-                        </li>
-                      ))
-                  }
+                <ul className="absolute z-99 top-full left-0 right-0 rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                  {state
+                    .filter(
+                      (item: any) =>
+                        !inputValue ||
+                        item.food_name
+                          .toLowerCase()
+                          .includes(inputValue.toLowerCase())
+                    )
+                    .slice(0, 10)
+                    .map((item: any, index) => (
+                      <li
+                        className="px-3 py-1 text-sm"
+                        {...getItemProps({ key: index, index, item })}
+                        style={{
+                          backgroundColor:
+                            highlightedIndex === index ? "lightgray" : "white",
+                          fontWeight: selectedItem === item ? "bold" : "normal",
+                        }}
+                      >
+                        {item.food_name}
+                      </li>
+                    ))}
                 </ul>
               </div>
             ) : null}
