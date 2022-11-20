@@ -1,10 +1,11 @@
 import { Disclosure } from "@headlessui/react";
-import { ChevronUpIcon } from "@heroicons/react/20/solid";
+import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useMemo } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { FoodLookup } from "./FoodLookup";
 import { convertTextToDecimal } from "./helper";
 import { getNutritionInformation } from "./request";
+import { capitalCase } from "capital-case";
 
 export const Accordion = () => {
   const methods = useFormContext();
@@ -320,7 +321,7 @@ export const Accordion = () => {
                   </div>
                 ) : null}
 
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mt-2">
                   <div className="flex">
                     <label>Human food</label>
                   </div>
@@ -347,69 +348,80 @@ export const Accordion = () => {
                     </label>
                   </div>
                 </div>
-                {watching.isHumanFood === "true" ? (
-                  <div>
-                    <FoodLookup onSelect={(e: any) => handleSelectFood(e)} />
-                    {/* <div className="my-2">
-                      <button
-                        className="focus:outline-none text-white bg-brown-700 hover:bg-brown-800 focus:ring-4 focus:ring-brown-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-brown-600 dark:hover:bg-brown-700 dark:focus:ring-brown-900"
-                        type="button"
-                        onClick={() => append({ name: "" })}
-                      >
-                        Add food
-                      </button>
-                    </div> */}
-                  </div>
-                ) : null}
                 {controlledFields.map((field, index) => {
                   console.log(field);
                   return (
-                    <div key={field}>
-                      <label>
-                        <span>Human food {index + 1}</span>
-                        <input
-                          id={`humanFood.${index}.name`}
-                          type="text"
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                          {...register(`humanFood.${index}.name`)}
-                        />
-                      </label>
-                      <label>
-                        <span>Amount in Human food {index + 1} (in Tbsp)</span>
-                        <input
-                          id={`humanFood.${index}.amount`}
-                          type="number"
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                          {...register(`humanFood.${index}.amount`)}
-                        />
-                      </label>
-                      <label>
-                        <span>Calories in Human food {index + 1}</span>
-                        <input
-                          id={`humanFood.${index}.calories`}
-                          type="number"
-                          readOnly
-                          className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                          {...register(`humanFood.${index}.calories`)}
-                        />
-                      </label>
-                      <button
-                        className="focus:outline-none text-white bg-brown-700 hover:bg-brown-800 focus:ring-4 focus:ring-brown-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-brown-600 dark:hover:bg-brown-700 dark:focus:ring-brown-900"
-                        type="button"
-                        onClick={() => remove(index)}
-                      >
-                        Remove food
-                      </button>
+                    <div className="my-1 border-t-2" key={field}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex">
+                          <label>
+                            <span>{capitalCase(field.name)}</span>
+                          </label>
+                        </div>
+                        <div className="flex">
+                          <button type="button" onClick={() => remove(index)}>
+                            <XMarkIcon className="h-5 w-5 text-red-700" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex">
+                          <label>
+                            <span>Amount</span>
+                          </label>
+                        </div>
+                        <div className="w-24 relative">
+                          <input
+                            id={`humanFood.${index}.amount`}
+                            type="number"
+                            className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                            {...register(`humanFood.${index}.amount`)}
+                          />
+                          <span className="absolute text-xs top-3.5 right-2">
+                            Tbsp(s)
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex">
+                          <label>
+                            <span>Calories</span>
+                          </label>
+                        </div>
+                        <div className="w-24 relative">
+                          <label>
+                            <input
+                              id={`humanFood.${index}.calories`}
+                              type="number"
+                              readOnly
+                              className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                              {...register(`humanFood.${index}.calories`)}
+                            />
+                            <span className="absolute text-xs top-3.5 right-2">
+                              cal
+                            </span>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
-                <div className="flex my-2 justify-between">
-                  <span>Calories remaining: </span>
-                  <span className="text-xs">
-                    {watching.calorieReqs - watching.desiredServingSizeCalories}{" "}
-                    cal
-                  </span>
+                {watching.isHumanFood === "true" ? (
+                  <div>
+                    <FoodLookup onSelect={(e: any) => handleSelectFood(e)} />
+                  </div>
+                ) : null}
+                <div className="border-t-4">
+                  <div className="flex my-2 items-center justify-between">
+                    <span>Calories remaining: </span>
+                    <span className="text-xs">
+                      {watching.calorieReqs -
+                        watching.desiredServingSizeCalories}{" "}
+                      cal
+                    </span>
+                  </div>
                 </div>
+
                 <div className="flex my-2 justify-between">
                   <span>Total calories: </span>
                   <span className="text-xs">TODO cal</span>
