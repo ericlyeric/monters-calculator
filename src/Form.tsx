@@ -12,37 +12,6 @@ export const Form = () => {
     defaultValues: FORM_DEFAULT_VALUES,
   });
 
-  // const [meal, setMeal] = useState(0);
-  // const [servingSize, setServingSize] = useState(""); // only work in 1/4 = 0.25, 1/3 = 0.333, 2/4 = 0.5, 2/3 = 0.666, 3/4 = 0.75, 1 = 1
-  // const [form, setForm] = useState([{ name: "" }]);
-  // const [showHumanFood, setShowHumanFood] = useState(false);
-
-  // const handleChange = (i: number, e: BaseSyntheticEvent) => {
-  //   const newForm = [...form];
-  //   // @ts-ignore
-  //   newForm[i][e.target.name] = e.target.value;
-  //   setForm(newForm);
-  // };
-
-  // const handleSizeChange = (e: BaseSyntheticEvent) => {
-  //   const value = e.target.value;
-  //   setServingSize(value);
-  // };
-
-  // const addFormFields = () => {
-  //   if (showHumanFood === false) {
-  //     setShowHumanFood(true);
-  //   } else {
-  //     setForm([...form, { name: "" }]);
-  //   }
-  // };
-
-  // const removeFormFields = (i: number) => {
-  //   let newForm = [...form];
-  //   newForm.splice(i, 1); // maybe use filter
-  //   setForm(newForm);
-  // };
-
   const onSubmit = async (data: any) => {
     const currentServingSize = convertTextToDecimal(data.currentServingSize);
     console.log(currentServingSize);
@@ -83,69 +52,6 @@ export const Form = () => {
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Accordion />
-        {/* <div>
-          <label>Calories per meal (dry kibble)</label>
-          <input
-            type="number"
-            name="mealcalories"
-            value={meal}
-            onChange={(e) => setMeal(parseInt(e.target.value, 10))}
-          />
-        </div>
-        <div>
-          <label>Current serving size (dry kibble)</label>
-          <select name="servingSize" onChange={(e) => handleSizeChange(e)}>
-            {SERVING_SIZES.map((size) => {
-              return (
-                <option key={size.name} value={size.name}>
-                  {size.name}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-        <hr />
-        <div>
-          {form.map((element, index) => {
-            if (showHumanFood) {
-              return (
-                <div key={index}>
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={element.name || ""}
-                    onChange={(e) => handleChange(index, e)}
-                  />
-                  {index > -1 ? (
-                    <button
-                      type="button"
-                      className="button remove"
-                      onClick={() => removeFormFields(index)}
-                    >
-                      Remove
-                    </button>
-                  ) : null}
-                </div>
-              );
-            }
-          })}
-          {form.length < 1 || showHumanFood === false ? (
-            <div>
-              <button
-                className="rounded-full"
-                type="button"
-                onClick={() => addFormFields()}
-              >
-                Add Human Food
-              </button>
-            </div>
-          ) : null}
-          <p>will add support for multiple foods later</p>
-        </div>
-        <button type="submit" disabled={meal <= 0}>
-          Calculate
-        </button> */}
       </form>
     </FormProvider>
   );
