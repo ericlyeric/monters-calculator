@@ -10,7 +10,7 @@ import { capitalCase } from "capital-case";
 export const Accordion = () => {
   const methods = useFormContext();
   const { register, watch, control, setValue } = methods;
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: "humanFood",
   });
@@ -58,10 +58,19 @@ export const Accordion = () => {
   const handleSelectFood = async (e: any) => {
     if (e?.food_name) {
       const response = await getNutritionInformation(e.food_name);
-      append(response);
+      console.log(response);
+      const amountCalories =
+        watching.calorieReqs - watching.desiredServingSizeCalories;
+      const amount = amountCalories / (response.calories / response.weight); // need to consider the density
+      append({
+        ...response,
+        amount,
+        amountCalories,
+      });
+      // update
+      // run calculations
     }
   };
-  // create useMemo to calculate total calories in the human foods
 
   return (
     <div className="flex m-auto md:w-2/3 px-auto-4">
@@ -308,7 +317,7 @@ export const Accordion = () => {
                   </div>
                 </div>
 
-                {/* Implement calculation, need to use macros according to Canadian Naturals */}
+                {/* Implement calculation, need to use macros according to PPP */}
                 {controlledFields.map((field, index) => {
                   return (
                     <div className="my-1 border-t-2" key={field}>
@@ -338,7 +347,7 @@ export const Accordion = () => {
                             {...register(`humanFood.${index}.amount`)}
                           />
                           <span className="absolute text-xs top-3.5 right-2">
-                            Tbsp(s)
+                            g
                           </span>
                         </div>
                       </div>
@@ -351,11 +360,11 @@ export const Accordion = () => {
                         <div className="w-24 relative">
                           <label>
                             <input
-                              id={`humanFood.${index}.calories`}
+                              id={`humanFood.${index}.amountCalories`}
                               type="number"
                               readOnly
                               className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                              {...register(`humanFood.${index}.calories`)}
+                              {...register(`humanFood.${index}.amountCalories`)}
                             />
                             <span className="absolute text-xs top-3.5 right-2">
                               cal
@@ -368,32 +377,45 @@ export const Accordion = () => {
                 })}
                 {watching.isHumanFood === "true" ? (
                   <div>
-                    <FoodLookup onSelect={(e: any) => handleSelectFood(e)} />
-                  </div>
-                ) : null}
-                <div className="border-t-4">
-                  <div className="flex my-2 items-center justify-between">
-                    <span>Calories remaining: </span>
-                    <span className="text-xs">
-                      {watching.calorieReqs -
-                        watching.desiredServingSizeCalories}{" "}
-                      cal
-                    </span>
-                  </div>
-                </div>
+                    <div>
+                      <FoodLookup onSelect={(e: any) => handleSelectFood(e)} />
+                    </div>
+                    <div className="border-t-4">
+                      <div className="flex my-2 items-center justify-between">
+                        <span>Calories remaining</span>
+                        <span className="text-xs">
+                          {watching.calorieReqs -
+                            watching.desiredServingSizeCalories}{" "}
+                          cal
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="flex my-2 justify-between">
-                  <span>Total calories: </span>
-                  <span className="text-xs">TODO cal</span>
-                </div>
-                <div className="my-2">
-                  <button
-                    className="focus:outline-none text-white bg-brown-700 hover:bg-brown-800 focus:ring-4 focus:ring-brown-300 font-small rounded-lg text-xs px-3 py-2 mb-2 dark:bg-brown-600 dark:hover:bg-brown-700 dark:focus:ring-brown-900"
-                    type="submit"
-                  >
-                    Calculate
-                  </button>
-                </div>
+                    <div className="flex my-2 justify-between">
+                      <span>Calories from dog food</span>
+                      <span className="text-xs">
+                        {watching.desiredServingSizeCalories} cal
+                      </span>
+                    </div>
+                    <div className="flex my-2 justify-between">
+                      <span>Calories from human food</span>
+                      {/* need to iterate through the human food */}
+                      <span className="text-xs">TODO cal</span>
+                    </div>
+                    <div className="flex my-2 justify-between">
+                      <span>Total calories: </span>
+                      <span className="text-xs">
+                        {watching.calorieReqs} cal
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center border-t-4">
+                    <div className="mt-2">
+                      <span>Nothing to calculate</span>
+                    </div>
+                  </div>
+                )}
               </Disclosure.Panel>
             </>
           )}

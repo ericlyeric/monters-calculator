@@ -3,7 +3,11 @@ import cavachon from "./assets/cavachon01.png";
 
 // use https://www.nutritionix.com/
 
-// take average dog food kibble breakdown
+// according to AAFCO (Association of American Feed Control Officials)
+// https://www.aafco.org/Portals/0/SiteContent/Regulatory/Committees/Pet-Food/Reports/Pet_Food_Report_2013_Midyear-Proposed_Revisions_to_AAFCO_Nutrient_Profiles.pdf
+// the adult maintenance minimum is 18% crude protein, and 5.5% crude fat
+// there is no minimum for carbohydrates
+
 // canadian naturals turkey and salmon
 // protein 25% min, fat 15% min
 
