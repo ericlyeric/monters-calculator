@@ -3,14 +3,14 @@ import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useMemo } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { FoodLookup } from "./FoodLookup";
-import { convertTextToDecimal } from "./helper";
+import { convertTextToDecimal, roundDecimalPlaces } from "./helper";
 import { getNutritionInformation } from "./request";
 import { capitalCase } from "capital-case";
 
 export const Accordion = () => {
   const methods = useFormContext();
   const { register, watch, control, setValue } = methods;
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "humanFood",
   });
@@ -39,10 +39,12 @@ export const Accordion = () => {
       watching.currentServingSize &&
       watching.desiredServingSize
     ) {
-      const result =
+      const result = roundDecimalPlaces(
         (watching.calorieReqs /
           convertTextToDecimal(watching.currentServingSize)) *
-        convertTextToDecimal(watching.desiredServingSize);
+          convertTextToDecimal(watching.desiredServingSize),
+        2
+      );
       setValue("desiredServingSizeCalories", result);
       return result;
     }
@@ -55,20 +57,51 @@ export const Accordion = () => {
     watching.desiredServingSize,
   ]);
 
+  const calculateHumanFoodCalories = useMemo(() => {
+    let humanFoodCalories = 0;
+    // need to incorporate macro requirements
+    const length = watching.humanFood.length;
+    if (length > 0) {
+      for (let i = 0; i < length; i++) {
+        humanFoodCalories += watching.humanFood[i].amountCalories;
+      }
+    }
+    return roundDecimalPlaces(humanFoodCalories, 2);
+  }, [watching.humanFood]);
+
+  const calculateCaloriesRemaining = useMemo(() => {
+    return roundDecimalPlaces(
+      watching.calorieReqs -
+        watching.desiredServingSizeCalories -
+        calculateHumanFoodCalories,
+      2
+    );
+  }, [
+    calculateHumanFoodCalories,
+    watching.calorieReqs,
+    watching.desiredServingSizeCalories,
+  ]);
+
   const handleSelectFood = async (e: any) => {
     if (e?.food_name) {
       const response = await getNutritionInformation(e.food_name);
       console.log(response);
-      const amountCalories =
-        watching.calorieReqs - watching.desiredServingSizeCalories;
-      const amount = amountCalories / (response.calories / response.weight); // need to consider the density
+      // figure out macros here
+      // need to come up with equations, for 2 items it would be 6 unknowns, 6 equations
+      // however these are just ratios just the values need to be satisfied
+      const amountCalories = roundDecimalPlaces(
+        watching.calorieReqs - watching.desiredServingSizeCalories,
+        2
+      );
+      const amount = roundDecimalPlaces(
+        amountCalories / (response.calories / response.weight),
+        2
+      );
       append({
         ...response,
         amount,
         amountCalories,
       });
-      // update
-      // run calculations
     }
   };
 
@@ -126,67 +159,7 @@ export const Accordion = () => {
                         </span>
                       </div>
                     </div>
-                    {/* <label>
-                        (OPTIONAL) Do you want to provide macronutrient
-                        requirements
-                      </label>
-                      <div className="my-1">
-                        <label className="mx-3" htmlFor="macroNo">
-                          <input
-                            type="radio"
-                            value="false"
-                            id="macroNo"
-                            {...register("macros")}
-                          />
-                          <span className="mx-1">No</span>
-                        </label>
-                        <label className="mx-3" htmlFor="macroYes">
-                          <input
-                            type="radio"
-                            value="true"
-                            id="macroYes"
-                            {...register("macros")}
-                          />
-                          <span className="mx-1">Yes</span>
-                        </label>
-                      </div>
-                      {watching.macros === "true" ? (
-                        <div>
-                          <div className="mt-2">
-                            <label htmlFor="proteinReqs">
-                              <span>Protein intake</span>
-                              <input
-                                id="proteinReqs"
-                                type="number"
-                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                                {...register("proteinReqs")}
-                              />
-                            </label>
-                          </div>
-                          <div className="mt-2">
-                            <label htmlFor="fatReqs">
-                              <span>Fat intake</span>
-                              <input
-                                id="fatReqs"
-                                type="number"
-                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                                {...register("fatReqs")}
-                              />
-                            </label>
-                          </div>
-                          <div className="mt-2">
-                            <label htmlFor="carbReqs">
-                              <span>Carbohydrate intake</span>
-                              <input
-                                id="carbReqs"
-                                type="number"
-                                className="my-1 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                                {...register("carbReqs")}
-                              />
-                            </label>
-                          </div>
-                        </div>
-                      ) : null} */}
+                    {/* add support for custom macro nutrients */}
                   </div>
                 </div>
               </Disclosure.Panel>
@@ -232,62 +205,49 @@ export const Accordion = () => {
                       />
                       <span className="text-xs">Wet</span>
                     </label>
-                    {/* implement option for none, just human food */}
-                    {/* <label className="mx-3" htmlFor="none">
-                      <input
-                        className="text-amber-500 focus:ring-amber-500"
-                        type="radio"
-                        value="none"
-                        id="none"
-                        {...register("foodType")}
-                      />
-                      <span className="text-xs">None</span>
-                    </label> */}
                   </div>
                 </div>
-                {watching.foodType !== "none" ? (
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex">
-                        <label htmlFor="desiredServingSize">
-                          <span>Serving size</span>
-                        </label>
-                      </div>
-                      <div className="w-24 relative">
-                        <input
-                          id="desiredServingSize"
-                          type="text"
-                          className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                          {...register("desiredServingSize")}
-                        />
-                        <span className="absolute text-xs top-3.5 right-2">
-                          cup(s)
-                        </span>
-                      </div>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex">
+                      <label htmlFor="desiredServingSize">
+                        <span>Serving size</span>
+                      </label>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex">
-                        <label htmlFor="desiredServingSizeCalories">
-                          <span>{`Calories in ${watching.foodType} food`}</span>
-                        </label>
-                      </div>
-                      <div className="w-24 relative">
-                        <input
-                          readOnly
-                          disabled
-                          id="desiredServingSizeCalories"
-                          type="number"
-                          value={calculateDesiredServingSizeCalories}
-                          className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
-                          {...register("desiredServingSizeCalories")}
-                        />
-                        <span className="absolute text-xs top-3.5 right-2">
-                          cal
-                        </span>
-                      </div>
+                    <div className="w-24 relative">
+                      <input
+                        id="desiredServingSize"
+                        type="text"
+                        className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                        {...register("desiredServingSize")}
+                      />
+                      <span className="absolute text-xs top-3.5 right-2">
+                        cup(s)
+                      </span>
                     </div>
                   </div>
-                ) : null}
+                  <div className="flex items-center justify-between">
+                    <div className="flex">
+                      <label htmlFor="desiredServingSizeCalories">
+                        <span>{`Calories in ${watching.foodType} food`}</span>
+                      </label>
+                    </div>
+                    <div className="w-24 relative">
+                      <input
+                        readOnly
+                        disabled
+                        id="desiredServingSizeCalories"
+                        type="number"
+                        value={calculateDesiredServingSizeCalories}
+                        className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
+                        {...register("desiredServingSizeCalories")}
+                      />
+                      <span className="absolute text-xs top-3.5 right-2">
+                        cal
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex">
@@ -343,6 +303,7 @@ export const Accordion = () => {
                           <input
                             id={`humanFood.${index}.amount`}
                             type="number"
+                            readOnly
                             className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                             {...register(`humanFood.${index}.amount`)}
                           />
@@ -383,10 +344,9 @@ export const Accordion = () => {
                     <div className="border-t-4">
                       <div className="flex my-2 items-center justify-between">
                         <span>Calories remaining</span>
+                        {/* need to iterate through human food */}
                         <span className="text-xs">
-                          {watching.calorieReqs -
-                            watching.desiredServingSizeCalories}{" "}
-                          cal
+                          {calculateCaloriesRemaining} cal
                         </span>
                       </div>
                     </div>
@@ -400,7 +360,9 @@ export const Accordion = () => {
                     <div className="flex my-2 justify-between">
                       <span>Calories from human food</span>
                       {/* need to iterate through the human food */}
-                      <span className="text-xs">TODO cal</span>
+                      <span className="text-xs">
+                        {calculateHumanFoodCalories} cal
+                      </span>
                     </div>
                     <div className="flex my-2 justify-between">
                       <span>Total calories: </span>
