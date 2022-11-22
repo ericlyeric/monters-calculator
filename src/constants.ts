@@ -36,4 +36,5 @@ export const FORM_DEFAULT_VALUES = {
   desiredServingSize: 0,
   desiredServingSizeCalories: 0,
   isHumanFood: "true",
+  humanFood: [],
 };
