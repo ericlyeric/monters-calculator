@@ -17,16 +17,10 @@ import cavachon from "./assets/cavachon01.png";
 // ancient grans grass-fed beef dry dog food
 // protein 28%, fat 37%, carbs 36%
 
-// {
-//   name: "1 tablespoon",
-//   value: 1 / 16,
-//   index: 0,
-// },
-
 const App = () => {
   return (
     <div
-      className="h-screen bg-repeat"
+      className="h-screen bg-repeat bg-center"
       style={{
         backgroundImage: `url(${cavachon}`,
         backgroundSize: "100px",
