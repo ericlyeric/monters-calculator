@@ -27,14 +27,17 @@ export const SERVING_SIZES = [
 
 export const FORM_DEFAULT_VALUES = {
   calorieReqs: 0,
-  currentServingSize: 0,
   macros: "false",
   proteinReqs: 28, // according to PPP
   fatReqs: 18, // according to PPP
   carbReqs: 0, // none
-  foodType: "dry",
-  desiredServingSize: 0,
-  desiredServingSizeCalories: 0,
-  isHumanFood: "true",
-  humanFood: [],
+  dogFoodCalories: 0,
+  humanFoodCalories: 0,
+  humanFood: [] as humanFoodProps[],
 };
+
+interface humanFoodProps {
+  name: string;
+  amount: number;
+  calories: number;
+}

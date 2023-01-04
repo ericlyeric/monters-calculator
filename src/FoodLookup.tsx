@@ -65,7 +65,7 @@ export const FoodLookup = ({ onSelect }: any) => {
                 ) : null}
 
                 {isOpen ? (
-                  <ul className="absolute z-99 top-100 left-0 right-0 border rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <ul className="absolute z-50 top-100 left-0 right-0 border rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                     {lookupState
                       .filter(
                         (item: any) =>

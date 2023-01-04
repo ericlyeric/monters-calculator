@@ -30,6 +30,7 @@ interface GetNutritionInformationProps {
   fat: number;
   carbohydrate: number;
   weight: number;
+  ratio: number;
 }
 
 const parseGetNutritionInformationResponse = (
@@ -51,5 +52,6 @@ const parseGetNutritionInformationResponse = (
     fat,
     carbohydrate,
     weight,
+    ratio: calories / weight,
   };
 };
