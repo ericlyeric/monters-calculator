@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable array-callback-return */
 import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { capitalCase } from "capital-case";
@@ -13,9 +11,10 @@ import { ProgressBar } from "./ProgressBar";
 import { getNutritionInformation } from "./request";
 
 export const Form = () => {
-  const { register, watch, control, setValue, handleSubmit } = useForm({
-    defaultValues: FORM_DEFAULT_VALUES,
-  });
+  const { register, watch, control, setValue, handleSubmit, getValues } =
+    useForm({
+      defaultValues: FORM_DEFAULT_VALUES,
+    });
 
   const { fields, append, remove, update } = useFieldArray({
     control,
@@ -36,19 +35,6 @@ export const Form = () => {
       ...watching.humanFood[index],
     };
   });
-
-  // const calculateDesiredServingSizeCalories = useMemo(() => {
-  //   if (watching.calorieReqs && watching.dogFoodCalories) {
-  //     const result = roundDecimalPlaces(
-  //       watching.calorieReqs / watching.dogFoodCalories,
-  //       2
-  //     );
-  //     setValue("dogFoodCalories", result);
-  //     return result;
-  //   }
-  //   setValue("dogFoodCalories", 0);
-  //   return 0;
-  // }, [setValue, watching.calorieReqs, watching.dogFoodCalories]);
 
   const calculateHumanFoodCalories = useMemo(() => {
     let humanFoodCalories = 0;
@@ -84,6 +70,7 @@ export const Form = () => {
     );
   }, [calculateDogFoodCalories, watching.dogFoodCalories]);
 
+  // to be implemented later
   const onSubmit = async (data: any) => {
     const currentServingSize = convertTextToDecimal(data.currentServingSize);
     console.log(currentServingSize);
@@ -104,10 +91,23 @@ export const Form = () => {
     }
   };
 
-  // const handleChangeFoodValue = async (e: any, index: number) => {
-  //   console.log(e.food_name);
-  //   console.log(index);
-  // };
+  const handleChangeFoodValue = async (
+    e: any,
+    field: string,
+    ratio: number,
+    index: number
+  ) => {
+    const value = e.target.value;
+    const getValue = getValues(`humanFood.${index}`);
+    if (field === "amount") {
+      const newValue = roundDecimalPlaces(value * ratio, 2);
+      update(0, { ...getValue, amount: value, calories: newValue });
+    } else if (field === "calories") {
+      const value = e.target.value;
+      const newValue = roundDecimalPlaces(value / ratio, 2);
+      update(0, { ...getValue, amount: value, calories: newValue });
+    }
+  };
 
   return (
     <>
@@ -291,6 +291,15 @@ export const Form = () => {
                                     type="number"
                                     className="my-1 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-xs focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-amber-500 dark:focus:border-amber-500"
                                     {...register(`humanFood.${index}.amount`)}
+                                    step="0.1"
+                                    onBlur={(e) =>
+                                      handleChangeFoodValue(
+                                        e,
+                                        "amount",
+                                        field.ratio,
+                                        index
+                                      )
+                                    }
                                   />
                                   <span className="absolute text-xs top-3.5 right-2">
                                     g
@@ -312,6 +321,15 @@ export const Form = () => {
                                       {...register(
                                         `humanFood.${index}.calories`
                                       )}
+                                      step="0.1"
+                                      onBlur={(e) =>
+                                        handleChangeFoodValue(
+                                          e,
+                                          "calories",
+                                          field.ratio,
+                                          index
+                                        )
+                                      }
                                     />
                                     <span className="absolute text-xs top-3.5 right-2">
                                       cal
