@@ -11,10 +11,9 @@ import { ProgressBar } from "./ProgressBar";
 import { getNutritionInformation } from "./request";
 
 export const Form = () => {
-  const { register, watch, control, setValue, handleSubmit, getValues } =
-    useForm({
-      defaultValues: FORM_DEFAULT_VALUES,
-    });
+  const { register, watch, control, handleSubmit, getValues } = useForm({
+    defaultValues: FORM_DEFAULT_VALUES,
+  });
 
   const { fields, append, remove, update } = useFieldArray({
     control,
@@ -25,6 +24,7 @@ export const Form = () => {
     calorieReqs: watch("calorieReqs"),
     dogFoodCalories: watch("dogFoodCalories"),
     humanFoodCalories: watch("humanFoodCalories"),
+    dogFoodAmount: watch("dogFoodAmount"),
     // macros: watch("macros"), not implemented yet
     humanFood: watch("humanFood"),
   };
@@ -57,11 +57,8 @@ export const Form = () => {
   }, [calculateDogFoodCalories, calculateHumanFoodCalories]);
 
   const calculateCaloriesRemaining = useMemo(() => {
-    return roundDecimalPlaces(
-      calculateDogFoodCalories - calculateHumanFoodCalories,
-      2
-    );
-  }, [calculateDogFoodCalories, calculateHumanFoodCalories]);
+    return roundDecimalPlaces(watching.calorieReqs - calculateTotalCalories, 2);
+  }, [calculateTotalCalories, watching.calorieReqs]);
 
   const calculateCupsOfDogFood = useMemo(() => {
     return roundDecimalPlaces(
@@ -69,6 +66,13 @@ export const Form = () => {
       2
     );
   }, [calculateDogFoodCalories, watching.dogFoodCalories]);
+
+  const calculateProgressBar = useMemo(() => {
+    return roundDecimalPlaces(
+      (calculateTotalCalories / watching.calorieReqs) * 100,
+      0
+    );
+  }, [calculateTotalCalories, watching.calorieReqs]);
 
   // to be implemented later
   const onSubmit = async (data: any) => {
@@ -97,29 +101,25 @@ export const Form = () => {
     ratio: number,
     index: number
   ) => {
-    const value = e.target.value;
+    const value = parseInt(e.target.value);
     const getValue = getValues(`humanFood.${index}`);
     if (field === "amount") {
       const newValue = roundDecimalPlaces(value * ratio, 2);
-      update(0, { ...getValue, amount: value, calories: newValue });
+      update(index, { ...getValue, amount: value, calories: newValue });
     } else if (field === "calories") {
-      const value = e.target.value;
       const newValue = roundDecimalPlaces(value / ratio, 2);
-      update(0, { ...getValue, amount: value, calories: newValue });
+      update(index, { ...getValue, amount: newValue, calories: value });
     }
   };
 
   return (
     <>
-      <div className="flex justify-center">
+      <div className="flex justify-center my-2">
         <div className="flex flex-col rounded-2xl w-2/3 p-1.5 bg-amber-500 opacity-95">
           <span className="text-center font-semibold m-0.5 text-gray-800">
             Calories
           </span>
-          <ProgressBar
-            currentValue={calculateTotalCalories}
-            maxValue={watching.calorieReqs}
-          />
+          <ProgressBar percentage={calculateProgressBar} />
           <CalorieCount
             target={watching.calorieReqs}
             total={calculateTotalCalories}
@@ -128,8 +128,8 @@ export const Form = () => {
         </div>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex m-auto md:w-2/3 px-auto-4">
-          <div className="md:mx-auto w-full rounded-2xl bg-white p-2 mx-3">
+        <div className="flex m-2 p-2">
+          <div className="mx-auto w-full rounded-2xl bg-white p-2">
             <div className="px-4 text-sm text-gray-500">
               <div>
                 <div className="flex items-center justify-between">
@@ -173,7 +173,7 @@ export const Form = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex">
                           <label htmlFor="dogFoodCalories">
-                            <span>Calories in 1 cup of dog food</span>
+                            <span>1 cup of dog food</span>
                           </label>
                         </div>
                         <div className="w-24 relative">
@@ -191,9 +191,7 @@ export const Form = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex">
                           <label htmlFor="humanFoodCalories">
-                            <span>
-                              Amount of calories to replace with human food
-                            </span>
+                            <span>Human food target</span>
                           </label>
                         </div>
                         <div className="w-24 relative">
@@ -214,19 +212,17 @@ export const Form = () => {
                     <div>
                       <FoodLookup onSelect={(e: any) => handleSelectFood(e)} />
                     </div>
-                    <div className="z-1my-1 border-t-2" key="dogFood">
+                    <div className="z-1 my-1 border-t-2" key="dogFood">
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex">
-                            <label>
-                              <span>Dog Food</span>
-                            </label>
-                          </div>
-                        </div>
                         <div className="flex">
+                          <label>
+                            <span>Dog Food</span>
+                          </label>
+                        </div>
+                        <div className="xs:flex-col flex">
                           <div className="flex items-center">
-                            <div className="flex mx-2">
-                              <label>
+                            <div className="mx-2">
+                              <label htmlFor="humanFoodCalories">
                                 <span>Amount</span>
                               </label>
                             </div>
@@ -244,12 +240,12 @@ export const Form = () => {
                             </div>
                           </div>
                           <div className="flex items-center">
-                            <div className="flex mx-2">
+                            <div className="mx-2">
                               <label>
                                 <span>Calories</span>
                               </label>
                             </div>
-                            <div className="w-24 relative mr-5">
+                            <div className="w-24 relative">
                               <label>
                                 <input
                                   id="dogFoodCalories"
@@ -271,14 +267,19 @@ export const Form = () => {
                       return (
                         <div className="my-1 border-t-2" key={field.id}>
                           <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center justify-between">
-                              <div className="flex">
-                                <label>
-                                  <span>{capitalCase(field.name)}</span>
-                                </label>
-                              </div>
+                            <div className="flex items-center">
+                              <button
+                                className="m-1"
+                                type="button"
+                                onClick={() => remove(index)}
+                              >
+                                <XMarkIcon className="h-5 w-5 text-red-700" />
+                              </button>
+                              <label>
+                                <span>{capitalCase(field.name)}</span>
+                              </label>
                             </div>
-                            <div className="flex">
+                            <div className="xs:flex-col flex">
                               <div className="flex items-center">
                                 <div className="flex mx-2 ">
                                   <label>
@@ -337,12 +338,6 @@ export const Form = () => {
                                   </label>
                                 </div>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => remove(index)}
-                              >
-                                <XMarkIcon className="h-5 w-5 text-red-700" />
-                              </button>
                             </div>
                           </div>
                         </div>
