@@ -8,6 +8,7 @@ export const convertTextToDecimal = (number: string) => {
 };
 
 export const roundDecimalPlaces = (value: number, decimals: number) => {
+  if (!Number.isFinite(value)) return 0;
   const factor = Math.pow(10, decimals);
   return Math.round(value * factor) / factor;
 };
